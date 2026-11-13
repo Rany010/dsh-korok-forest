@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="Korok-inspired original woodland spirit: sleep">
+<g stroke-linejoin="round" stroke-linecap="round">
+<!-- shared anchor: character feet at x=128 y=232, world 256x256 -->
+<ellipse cx="128" cy="231" rx="58" ry="9" fill="#1A382A" opacity=".12"/>
+<path d="M93 154 Q82 139 86 113 Q100 74 125 79 Q158 74 172 112 L163 166 Q169 193 153 218 L105 218 Q84 196 93 154Z" fill="#C99E6B" stroke="#765638" stroke-width="5"/>
+<path d="M105 213 Q94 226 100 232 M150 213 Q160 225 151 232" stroke="#765638" stroke-width="12" fill="none"/>
+<path d="M92 168 Q76 176 69 191 M166 167 Q182 175 189 189" stroke="#8D6844" stroke-width="12" fill="none"/>
+<path d="M101 82 Q80 61 81 42 Q105 54 120 76 M155 83 Q177 48 179 32 Q151 46 137 77" fill="#B58C5B" stroke="#765638" stroke-width="5"/>
+<path d="M112 81 Q110 64 125 56 Q142 55 147 73" fill="#679453" stroke="#416A42" stroke-width="4"/>
+<path d="M91 158 Q93 181 105 192 M158 169 Q157 184 149 193" stroke="#A67A4C" stroke-width="4" fill="none" opacity=".6"/>
+<!-- leaf face, stable bounding box 59..191 / 72..177 -->
+<path d="M124 86 Q131 59 147 68 Q162 75 153 99 Q184 84 191 109 Q191 127 161 132 Q181 154 162 169 Q143 181 129 153 Q110 180 91 164 Q77 147 96 129 Q64 131 60 109 Q62 88 100 98 Q104 74 124 86Z" fill="#A8C27B" stroke="#3E6544" stroke-width="6"/>
+<path d="M129 149 L130 82 M128 127 L100 107 M131 128 L157 103 M128 145 L108 153 M130 144 L152 153" stroke="#E4E7A6" opacity=".7" stroke-width="3" fill="none"/>
+<path d="M101 117 Q109 122 118 117 M140 117 Q148 122 156 117" stroke="#385139" stroke-width="4" fill="none"/><path d="M123 133 Q130 137 137 133" stroke="#385139" stroke-width="3" fill="none"/>
+<path d="M91 182 Q103 180 111 191 L110 214 L91 214Z" fill="#80915D" stroke="#6C6841" stroke-width="4"/>
+<path d="M96 197 Q101 194 108 197" stroke="#E3BF70" stroke-width="4" fill="none"/>
+<path d="M74 90 Q105 57 155 71 Q192 93 193 113 Q160 101 130 105 Q100 104 74 90Z" fill="#6E9B5A" stroke="#3E6544" stroke-width="5"/><text x="189" y="68" fill="#6F9566" font-size="30" font-family="sans-serif">Z</text><text x="212" y="47" fill="#6F9566" font-size="18" font-family="sans-serif">z</text>
+</g></svg>
