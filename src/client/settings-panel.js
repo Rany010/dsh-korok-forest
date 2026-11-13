@@ -21,7 +21,7 @@ export function KorokSettings() {
     'div',
     { className: 'korok-settings' },
     createElement('h2', null, '呀哈哈森林'),
-    createElement('p', null, '晨光和幽光跟随 DSH 现有的浅色、深色和系统外观，不改你的字体和字号。桌宠自动姿势还没有接入：宿主目前只能提供会话是否在运行，不能区分思考和工具；授权弹层由官方插件消费。种子自动收集已暂停。'),
+    createElement('p', null, '晨光和幽光跟随 DSH 现有的浅色、深色和系统外观，不改你的字体和字号。会话里的桌宠会跟着当前会话切换：等你确认、模型思考、工具执行、刚完成或失败，安静约五分钟后睡着。打开旧会话不会重播历史完成。种子自动收集仍暂停。'),
     createElement(
       'fieldset',
       null,

@@ -26,7 +26,7 @@ dsh plugin --profile web remove dsh-korok-forest
 ## 当前范围
 
 - 双主题色覆盖正文、侧栏、气泡、输入、代码块底、Diff 底色和标记、滚动条、菜单、Toast、焦点圈。不改语法高亮，不改用户字体。
-- 新会话和会话里的木灵使用七态透明 SVG。自动姿势保持 idle，设置页可以预览七态。
+- 会话里的木灵按当前会话切换表情：等你确认、模型思考、工具执行、刚完成或失败，安静约五分钟后睡着。打开旧会话不会重播已经结束的回合。
 - 种子账本和状态机已经有单测。自动发种子关闭，收藏页不显示模拟数量。
 
 核验记录在 `docs/implementation-findings.md`。Token 对照在 `theme/dsh-token-mapping.md`。

@@ -7,9 +7,10 @@
   "main": "./src/index.js",
   "exports": {
     ".": "./src/index.js",
-    "./client": "./src/client/index.js"
+    "./client": "./lib/client.js"
   },
   "files": [
+    "lib",
     "src",
     "assets",
     "theme",
@@ -36,6 +37,7 @@
     "dsh": ">=0.2.2-rc.1 <0.3.0"
   },
   "scripts": {
+    "build": "node scripts/build-client.mjs",
     "test": "node --test"
   },
   "license": "MIT"

@@ -3,21 +3,50 @@ import { defaultSettings, parseSettings } from '../settings/model.js'
 const KEY = 'dsh-korok-forest/v1'
 const listeners = new Set()
 
+/** Last raw document. Undefined means the cache is empty. */
+let cachedRaw
+/** Last parsed document. useSyncExternalStore requires this reference to stay stable. */
+let cachedSettings
+
+/**
+ * Read the stored document without throwing.
+ * @returns {string | null}
+ */
+function readRaw() {
+  if (typeof localStorage === 'undefined') return null
+  try {
+    return localStorage.getItem(KEY)
+  } catch (error) {
+    console.warn('[dsh-korok-forest] ignored unreadable settings storage', error)
+    return null
+  }
+}
+
 /** @returns {object} */
 export function loadSettings() {
-  if (typeof localStorage === 'undefined') return defaultSettings()
+  const raw = readRaw()
+  if (cachedSettings !== undefined && raw === cachedRaw) return cachedSettings
+  cachedRaw = raw
   try {
-    return parseSettings(localStorage.getItem(KEY))
+    cachedSettings = parseSettings(raw)
   } catch (error) {
     console.warn('[dsh-korok-forest] ignored unreadable settings', error)
-    return defaultSettings()
+    cachedSettings = defaultSettings()
   }
+  return cachedSettings
 }
 
 /** @param {object} settings */
 export function saveSettings(settings) {
+  const raw = JSON.stringify(settings)
+  cachedSettings = settings
+  cachedRaw = raw
   if (typeof localStorage !== 'undefined') {
-    localStorage.setItem(KEY, JSON.stringify(settings))
+    try {
+      localStorage.setItem(KEY, raw)
+    } catch (error) {
+      console.warn('[dsh-korok-forest] failed to save settings', error)
+    }
   }
   for (const listener of listeners) listener()
 }
@@ -39,6 +68,14 @@ export function subscribeSettings(listener) {
 }
 
 export function clearLocalData() {
-  if (typeof localStorage !== 'undefined') localStorage.removeItem(KEY)
+  cachedSettings = undefined
+  cachedRaw = undefined
+  if (typeof localStorage !== 'undefined') {
+    try {
+      localStorage.removeItem(KEY)
+    } catch (error) {
+      console.warn('[dsh-korok-forest] failed to clear settings', error)
+    }
+  }
   for (const listener of listeners) listener()
 }

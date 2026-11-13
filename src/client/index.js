@@ -1,5 +1,6 @@
 import { themeOverrides } from '../theme/tokens.js'
 import { KorokFrame } from './frame.js'
+import { bindSessions } from './host.js'
 import { KorokSettings } from './settings-panel.js'
 import { installKorokStyles } from './styles.js'
 
@@ -7,13 +8,14 @@ import { installKorokStyles } from './styles.js'
 export const name = 'dsh-korok-forest'
 
 /** Cordis services required before apply. */
-export const inject = ['theme', 'slots']
+export const inject = ['theme', 'slots', 'sessions']
 
 /**
  * Apply the Korok palette and mount the pet frame plus the settings page.
  * @param {object} ctx - client context with theme and slots.
  */
 export function apply(ctx) {
+  bindSessions(ctx.sessions)
   ctx.effect(() => {
     const disposeTokens = ctx.theme.overrideTokens('dsh-korok-forest', themeOverrides())
     const style = installKorokStyles()

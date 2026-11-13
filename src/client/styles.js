@@ -8,10 +8,24 @@ const CSS = `
   margin: 0;
   pointer-events: none;
 }
+.korok-say {
+  position: absolute;
+  right: calc(100% + 6px);
+  bottom: 70%;
+  pointer-events: none;
+  white-space: nowrap;
+  font-size: 11px;
+  line-height: 1.2;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: var(--dsw-alias-toast-bg);
+  color: var(--dsw-alias-toast-label);
+}
 .korok-pet img {
   display: block;
   width: 72px;
   height: 72px;
+  object-fit: contain;
   pointer-events: auto;
   user-select: none;
   -webkit-user-drag: none;
@@ -33,6 +47,9 @@ const CSS = `
 .korok-pet[data-motion="standard"][data-state="sleep"] img {
   animation: korok-breathe 3.6s ease-in-out infinite;
 }
+.korok-pet[data-motion="standard"][data-state="thinking"] img {
+  animation: korok-tilt 2.4s ease-in-out infinite;
+}
 .korok-pet[data-motion="standard"][data-state="working"] img {
   animation: korok-bob 1.1s ease-in-out infinite;
 }
@@ -42,6 +59,10 @@ const CSS = `
 @keyframes korok-breathe {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-3px); }
+}
+@keyframes korok-tilt {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-4deg); }
 }
 @keyframes korok-bob {
   0%, 100% { transform: translateX(0); }
