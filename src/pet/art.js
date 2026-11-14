@@ -1,12 +1,12 @@
-import failure from '../../assets/character/png/failure.png'
-import idle from '../../assets/character/png/idle.png'
-import sleep from '../../assets/character/png/sleep.png'
-import success from '../../assets/character/png/success.png'
-import thinking from '../../assets/character/png/thinking.png'
-import waitingPermission from '../../assets/character/png/waiting_permission.png'
-import working from '../../assets/character/png/working.png'
+import failure from '../../assets/v4/mascot/failure.png'
+import idle from '../../assets/v4/mascot/idle.png'
+import sleep from '../../assets/v4/mascot/sleep.png'
+import success from '../../assets/v4/mascot/success.png'
+import thinking from '../../assets/v4/mascot/thinking.png'
+import waitingPermission from '../../assets/v4/mascot/waiting_permission.png'
+import working from '../../assets/v4/mascot/working.png'
 
-/** Display art from the V2 pack. The geometric SVGs stay on disk as the vector source. */
+/** Seven static transitional poses supplied by the V4 design pack. */
 export const STATE_ART = {
   idle,
   thinking,
