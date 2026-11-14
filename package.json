@@ -40,5 +40,8 @@
     "build": "node scripts/build-client.mjs",
     "test": "node --test"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
 }

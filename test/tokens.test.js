@@ -7,8 +7,8 @@ import { TOKEN_MAP, themeOverrides } from '../src/theme/tokens.js'
 test('maps canvas onto the verified document background token in both palettes', () => {
   const overrides = themeOverrides()
   assert.deepEqual(overrides['--dsw-alias-bg-base'], {
-    light: '#FFFFFF',
-    dark: '#1A211D',
+    light: '#F8F8F3',
+    dark: '#112724',
   })
 })
 
@@ -24,7 +24,7 @@ test('every override is a light and dark color pair', () => {
   }
 })
 
-test('uses the V2 semantic colors for every mapped token', () => {
+test('uses the current semantic colors for every mapped token', () => {
   const overrides = themeOverrides()
   for (const [semantic, cssName] of TOKEN_MAP) {
     assert.equal(overrides[cssName].light, light.tokens[semantic], cssName)

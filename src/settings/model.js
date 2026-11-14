@@ -10,6 +10,9 @@ export function defaultSettings() {
     motion: 'standard',
     seedsAutomatic: false,
     sidebarTexture: false,
+    backgroundVisible: true,
+    backgroundIntensity: 88,
+    simpleReading: false,
     petX: null,
     petY: null,
   }
@@ -37,6 +40,10 @@ export function parseSettings(raw) {
     motion: MOTION.has(parsed.motion) ? parsed.motion : defaults.motion,
     seedsAutomatic: false,
     sidebarTexture: parsed.sidebarTexture === true,
+    backgroundVisible: typeof parsed.backgroundVisible === 'boolean' ? parsed.backgroundVisible : true,
+    backgroundIntensity: typeof parsed.backgroundIntensity === 'number' && Number.isFinite(parsed.backgroundIntensity)
+      ? Math.min(100, Math.max(0, parsed.backgroundIntensity)) : defaults.backgroundIntensity,
+    simpleReading: parsed.simpleReading === true,
     petX,
     petY,
   }

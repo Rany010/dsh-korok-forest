@@ -1,11 +1,15 @@
 import { createElement, useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { stateArtUrl } from '../pet/art.js'
+import homeArt from '../../assets/v4/mascot/home-lantern.webp'
+import morningArt from '../../assets/v4/mascot/home-daisy.webp'
+import { useDarkAppearance } from './hero.js'
+import { fitScene } from './scene-geometry.js'
 import { createPetMachine } from '../pet/machine.js'
 import { createObservationCursor, observeHost } from '../pet/observe.js'
 import { eventSourceOf } from './host.js'
 import { loadSettings, subscribeSettings, updateSettings } from './storage.js'
 
-const SIZES = { S: 64, M: 72, L: 80 }
+const SIZES = { S: 72, M: 80, L: 88 }
 const EMPTY_WINDOW = { entries: null, change: null }
 const SAY = {
   idle: '呀哈哈！',
@@ -23,7 +27,8 @@ const SAY = {
  */
 export function KorokFrame({ hero = false, children, useSessionStatus }) {
   const settings = useSyncExternalStore(subscribeSettings, loadSettings, loadSettings)
-  const [sessionId, frameRef] = useConversationSession()
+  const dark = useDarkAppearance()
+  const [sessionId, frameRef] = useConversationSession(hero, dark, settings.petVisible, settings.petSize)
   const phase = useSessionPhase(useSessionStatus, sessionId)
   const snapshot = useEventWindow(sessionId)
   const pose = usePetPose({
@@ -32,16 +37,19 @@ export function KorokFrame({ hero = false, children, useSessionStatus }) {
     phase,
     snapshot,
   })
-  if (settings.petVisible !== true) {
-    return createElement('div', { className: 'korok-frame', ref: frameRef }, children)
-  }
   const state = hero ? 'idle' : pose
   const style = hero ? undefined : sessionStyle(settings)
   return createElement(
     'div',
-    { className: 'korok-frame', ref: frameRef },
+    { className: 'korok-frame', ref: frameRef, 'data-hero': String(hero), 'data-pet-visible': String(settings.petVisible), style: { '--korok-home-pet-size': dark ? '176px' : '160px', '--korok-session-pet-size': `${SIZES[settings.petSize] ?? 80}px` } },
+    settings.backgroundVisible && settings.backgroundIntensity > 0 && (hero || !settings.simpleReading)
+      ? createElement('div', {
+        className: 'korok-scene', 'aria-hidden': true,
+        'data-view': hero ? 'home' : 'session',
+        style: { '--korok-scene-opacity': settings.backgroundIntensity / 100 },
+      }) : null,
     children,
-    createElement(
+    settings.petVisible ? createElement(
       'div',
       {
         className: 'korok-pet',
@@ -51,16 +59,17 @@ export function KorokFrame({ hero = false, children, useSessionStatus }) {
         'data-state': state,
         style,
       },
-      hero ? null : createElement('span', { className: 'korok-say' }, SAY[state] ?? SAY.idle),
+      !hero && ['waiting_permission', 'success', 'failure'].includes(state)
+        ? createElement('span', { className: 'korok-say', key: state }, SAY[state]) : null,
       createElement('img', {
-        src: stateArtUrl(state),
+        src: hero ? (dark ? homeArt : morningArt) : stateArtUrl(state),
         alt: '',
-        width: hero ? 140 : SIZES[settings.petSize] ?? 72,
-        height: hero ? 140 : SIZES[settings.petSize] ?? 72,
+        width: hero ? 176 : SIZES[settings.petSize] ?? 80,
+        height: hero ? 176 : SIZES[settings.petSize] ?? 80,
         draggable: false,
         onPointerDown: hero ? undefined : (event) => startDrag(event),
       }),
-    ),
+    ) : null,
   )
 }
 
@@ -68,7 +77,7 @@ export function KorokFrame({ hero = false, children, useSessionStatus }) {
  * Read the session id the conversation already publishes on its content root.
  * @returns {[string|null, import('react').RefCallback<Element>]}
  */
-function useConversationSession() {
+function useConversationSession(hero, dark, petVisible, petSize) {
   const nodeRef = useRef(null)
   const [sessionId, setSessionId] = useState(null)
   const setNode = useCallback((node) => {
@@ -85,10 +94,60 @@ function useConversationSession() {
       setSessionId(current => (current === next ? current : next))
     }
     read()
+    // The host measures its composer too, but publishes that value on the
+    // scroll body. Our sibling decoration must measure the same seat.
+    const seat = root.querySelector('[data-composer-seat]')
+    const measure = () => {
+      // When the transcript has no spare gutter, reserve a footer lane instead
+      // of floating over attachments. Saved drag coordinates survive widening.
+      const chatWidth = parseFloat(getComputedStyle(root).getPropertyValue('--dsh-chat-content-width')) || 920
+      const docked = !hero && petVisible && root.clientWidth < chatWidth + 2 * ((SIZES[petSize] ?? 80) + 38)
+      node.setAttribute('data-pet-docked', String(docked))
+      const height = seat?.getBoundingClientRect().height ?? 148
+      node.style.setProperty('--korok-composer-height', `${height}px`)
+      node.style.setProperty('--korok-viewport-height', `${root.clientHeight}px`)
+      // HeroShell's brand slot is inside the headline's inline hitbox.
+      // This ancestry is verified against the installed 0.2.2-rc.3 source.
+      const headline = root.querySelector('[data-slot="conversation.hero.brand.mark"]')?.parentElement?.parentElement
+      if (hero && headline) {
+        const rootRect = root.getBoundingClientRect()
+        const top = headline.getBoundingClientRect().bottom - rootRect.top + 8
+        const petSize = node.querySelector('.korok-pet img')?.getBoundingClientRect().width ?? (dark ? 176 : 160)
+        const feetX = petSize * (dark ? .44 : .48)
+        const feetY = petSize * .93
+        node.style.setProperty('--korok-home-pet-top', `${top}px`)
+        node.style.setProperty('--korok-foot-x', `${feetX}px`)
+        node.style.setProperty('--korok-foot-y', `${feetY}px`)
+        const panel = root.closest('[data-phase]')
+        const headerHeight = panel ? rootRect.top - panel.getBoundingClientRect().top : 0
+        node.style.setProperty('--korok-header-height', `${headerHeight}px`)
+        const ground = petVisible ? top + feetY + headerHeight : (rootRect.height + headerHeight) * .6
+        const scene = fitScene(rootRect.width, rootRect.height + headerHeight, ground,
+          dark ? [1672, 941, 995, 568] : [1672, 941, 836, 562])
+        for (const key of ['width', 'height', 'x', 'y']) node.style.setProperty(`--korok-scene-${key}`, `${scene[key]}px`)
+        const stack = seat?.querySelector('div:has(> [data-slot="conversation.composer.bar"])')
+        const add = seat?.querySelector('[data-composer-card] button[aria-haspopup="listbox"]')
+        if (stack && add) {
+          const parent = stack.getBoundingClientRect(), button = add.getBoundingClientRect()
+          node.style.setProperty('--korok-tools-x', `${button.right - parent.left + 6}px`)
+          node.style.setProperty('--korok-tools-y', `${button.top - parent.top}px`)
+        }
+      }
+    }
+    measure()
+    const resize = new ResizeObserver(measure)
+    resize.observe(root)
+    if (seat) resize.observe(seat)
+    const scroller = root.querySelector('[data-conversation-scroll]')
+    if (hero) scroller?.addEventListener('scroll', measure, { passive: true })
     const observer = new MutationObserver(read)
     observer.observe(root, { attributes: true, attributeFilter: ['data-conversation-session'] })
-    return () => observer.disconnect()
-  }, [])
+    return () => {
+      observer.disconnect()
+      resize.disconnect()
+      scroller?.removeEventListener('scroll', measure)
+    }
+  }, [hero, dark, petVisible, petSize])
   return [sessionId, setNode]
 }
 
@@ -201,9 +260,14 @@ function emptySubscribe(_listener) {
  */
 function sessionStyle(settings) {
   if (typeof settings.petX === 'number' && typeof settings.petY === 'number') {
-    return { left: `${settings.petX * 100}%`, top: `${settings.petY * 100}%`, right: 'auto', bottom: 'auto' }
+    const size = SIZES[settings.petSize] ?? 80
+    return {
+      left: `clamp(0px, ${settings.petX * 100}%, calc(100% - ${size + 12}px))`,
+      top: `clamp(0px, ${settings.petY * 100}%, calc(var(--korok-viewport-height) - var(--korok-composer-height) - ${size + 16}px))`,
+      right: 'auto', bottom: 'auto',
+    }
   }
-  return { right: '26px', bottom: '148px' }
+  return { right: '26px', bottom: 'calc(var(--korok-composer-height, 148px) + 16px)' }
 }
 
 /** @param {PointerEvent} event */
